@@ -85,7 +85,7 @@ end//-------------------------------------mux_4
 
 
 control_movimiento control_movimiento(
-					.s(sma),
+					.sma(sma),
 					.clk(clk),
 					.R_vertical_1(RV1),
 					.R_vertical_2(RV2),
