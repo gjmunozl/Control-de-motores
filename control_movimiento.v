@@ -1,4 +1,4 @@
-module control_movimiento (sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1 , R_horizontal_2 , theta_manual , theta_actual , phi_manual , phi_actual, s_out_theta_pos, s_out_theta_neg, s_out_phi_pos, s_out_phi_neg);
+module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1 , R_horizontal_2 , theta_manual , theta_actual , phi_manual , phi_actual, s_out_theta_pos, s_out_theta_neg, s_out_phi_pos, s_out_phi_neg);
   
 	input clk;
 	////////////////////entradas de la fotoresistencias.
@@ -10,8 +10,8 @@ module control_movimiento (sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1
 	///////////////////entradas de posición manual
 	input [15:0]theta_manual;
 	input [15:0]theta_actual;
-	input [1:0]sma; //////////interruptor modo manual/automatico
-	
+	input[1:0]sma; //////////interruptor modo manual/automatico
+	input rst;
 	///////////////////entradas de posición actual	
 	input [15:0]phi_actual;
 	input [15:0]phi_manual;
@@ -28,8 +28,21 @@ module control_movimiento (sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1
 	reg [15:0] error=3'b101;//5
 	reg [15:0] giro=8'b10110100;//180;
 	
+	//always @(R_vertical_1||R_vertical_2||R_horizontal_1||R_horizontal_2)begin
+	//always @(theta_manual||phi_manual)
+	//reg rsma;
+        //assign sma =rsma;
 	always @(posedge clk)begin
-	
+
+
+		if(rst)begin 
+	shift_motor=2'b00;
+	shift_R=2'b00;
+	error=3'b101;//5
+	giro=8'b10110100;//180;
+	//rsma=2'b00;
+		end else begin
+			
 	
 		if(sma!=2'b01)begin
 		//----------------------//MODO AUTOMATICO//----------------------//	
@@ -143,4 +156,5 @@ module control_movimiento (sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1
 		//----------------------//MODO MANUAL//----------------------//
 		end	
 	end
+end
 endmodule
