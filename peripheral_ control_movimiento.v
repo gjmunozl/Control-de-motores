@@ -4,14 +4,14 @@ module peripheral_control_movimiento(clk , rst , d_in , cs , addr , rd , wr, d_o
   input rst;
   input [15:0]d_in;
   input cs;
-  input [3:0]addr; // 4 LSB from j1_io_addr
+  input [7:0]addr; // 4 LSB from j1_io_addr
   input rd;
   input wr;
   output reg [15:0]d_out;
 
 
 //------------------------------------ regs and wires-------------------------------
-reg [1:0] sma; //no inicializar ninguna de estas para que funcione la simulación
+reg [1:0] sma;
 reg [15:0] RV1;
 reg [15:0] RV2;
 reg [15:0] RH1;
@@ -34,21 +34,21 @@ reg [5:0] s;
 
 always @(*) begin//---address_decoder--------------------------
 case (addr)
-4'h0:begin s = (cs && wr) ? 6'b000001 : 6'b000000 ;end //SS
-4'h2:begin s = (cs && wr) ? 6'b000010 : 6'b000000 ;end //RV1
-4'h4:begin s = (cs && wr) ? 6'b000011 : 6'b000000 ;end //RV2
-4'h6:begin s = (cs && wr) ? 6'b000100 : 6'b000000 ;end //RH1
-4'h8:begin s = (cs && wr) ? 6'b000101 : 6'b000000 ;end //RH2
-4'hA:begin s = (cs && wr) ? 6'b000110 : 6'b000000 ;end //theta_m
-4'hC:begin s = (cs && wr) ? 6'b000111 : 6'b000000 ;end //theta_a
-4'hE:begin s = (cs && wr) ? 6'b001000 : 6'b000000 ;end //phi_m
-5'h10:begin s = (cs && wr) ? 6'b001001 : 6'b000000 ;end //phi_a
+8'h00:begin s = (cs && wr) ? 6'b000001 : 6'b000000 ;end //sma
+8'h02:begin s = (cs && wr) ? 6'b000010 : 6'b000000 ;end //RV1
+8'h04:begin s = (cs && wr) ? 6'b000011 : 6'b000000 ;end //RV2
+8'h06:begin s = (cs && wr) ? 6'b000100 : 6'b000000 ;end //RH1
+8'h08:begin s = (cs && wr) ? 6'b000101 : 6'b000000 ;end //RH2
+8'h0A:begin s = (cs && wr) ? 6'b000110 : 6'b000000 ;end //theta_m
+8'h0C:begin s = (cs && wr) ? 6'b000111 : 6'b000000 ;end //theta_a
+8'h0E:begin s = (cs && wr) ? 6'b001000 : 6'b000000 ;end //phi_m
+8'h10:begin s = (cs && wr) ? 6'b001001 : 6'b000000 ;end //phi_a
 
 
-5'h12:begin s = (cs && rd) ? 6'b001010 : 6'b000000 ;end //s_out_theta_p
-5'h16:begin s = (cs && rd) ? 6'b001011 : 6'b000000 ;end //s_out_theta_n
-5'h14:begin s = (cs && rd) ? 6'b001100 : 6'b000000 ;end //s_out_phi_p
-5'h18:begin s = (cs && rd) ? 6'b001101 : 6'b000000 ;end //s_out_phi_n
+8'h12:begin s = (cs && rd) ? 6'b001010 : 6'b000000 ;end //s_out_theta_p
+8'h16:begin s = (cs && rd) ? 6'b001011 : 6'b000000 ;end //s_out_theta_n
+8'h14:begin s = (cs && rd) ? 6'b001100 : 6'b000000 ;end //s_out_phi_p
+8'h18:begin s = (cs && rd) ? 6'b001101 : 6'b000000 ;end //s_out_phi_n
 default:begin s = 6'b000000 ; end
 endcase
 end//-----------------address_decoder--------------------------
@@ -85,7 +85,8 @@ end//-------------------------------------mux_4
 
 
 control_movimiento control_movimiento(
-					.sma(sma),
+					.rst(rst),						
+					.sma(sma),					
 					.clk(clk),
 					.R_vertical_1(RV1),
 					.R_vertical_2(RV2),
