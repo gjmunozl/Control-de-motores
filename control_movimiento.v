@@ -1,6 +1,7 @@
 module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizontal_1 , R_horizontal_2 , theta_manual , theta_actual , phi_manual , phi_actual, s_out_theta_pos, s_out_theta_neg, s_out_phi_pos, s_out_phi_neg);
   
 	input clk;
+	input rst;
 	////////////////////entradas de la fotoresistencias.
 	input [15:0]R_vertical_1;
 	input [15:0]R_vertical_2;
@@ -11,7 +12,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 	input [15:0]theta_manual;
 	input [15:0]theta_actual;
 	input[1:0]sma; //////////interruptor modo manual/automatico
-	input rst;
+	
 	///////////////////entradas de posición actual	
 	input [15:0]phi_actual;
 	input [15:0]phi_manual;
@@ -24,26 +25,18 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 
 	//inicialización 
 	reg[1:0] shift_motor=2'b00;
-	reg[1:0] shift_R=2'b00;
 	reg [15:0] error=3'b101;//5
 	reg [15:0] giro=8'b10110100;//180;
 	
-	//always @(R_vertical_1||R_vertical_2||R_horizontal_1||R_horizontal_2)begin
-	//always @(theta_manual||phi_manual)
-	//reg rsma;
-        //assign sma =rsma;
 	always @(posedge clk)begin
 
-
 		if(rst)begin 
-	shift_motor=2'b00;
-	shift_R=2'b00;
-	error=3'b101;//5
-	giro=8'b10110100;//180;
-	//rsma=2'b00;
+			shift_motor=2'b00;
+			error=3'b101;//5
+			giro=8'b10110100;//180;
+			//rsma=2'b00;
 		end else begin
 			
-	
 		if(sma!=2'b01)begin
 		//----------------------//MODO AUTOMATICO//----------------------//	
 			if(shift_motor==2'b00)begin
@@ -54,7 +47,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 				s_out_phi_pos=2'b00;
 				s_out_phi_neg=2'b00;
 	
-				if ((R_vertical_1>=(R_vertical_2-error) )&& (R_vertical_1<=(R_vertical_2+error)))begin
+				if (R_vertical_1>=(R_vertical_2-error) && R_vertical_1<=(R_vertical_2+error))begin
 					//NO mover motor theta
 					s_out_theta_neg=2'b00;
 					s_out_theta_pos=2'b00;
@@ -62,9 +55,11 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 				end else begin 
 					if(R_vertical_1>R_vertical_2)begin
 						s_out_theta_pos=2'b01; // movimiento horario vertical
+						s_out_theta_neg
 					end
 					if(R_vertical_1<R_vertical_2)begin
 						s_out_theta_neg=2'b01; // movimiento anti-horario vertical
+						s_out_theta_pos=2'b00;
 					end	
 				end
 				////////////////mover automaticamente motor theta
@@ -85,9 +80,11 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 				end else begin 
 					if(R_horizontal_1>R_horizontal_2)begin
 						s_out_phi_pos=2'b01; // movimiento horario  horizontal
+						s_out_phi_neg=2'b00;
 					end	
 					if(R_horizontal_1<R_horizontal_2)begin
 						s_out_phi_neg=2'b01; // movimiento anti-horario horizontal
+						s_out_phi_pos=2'b00;
 					end	
 				end
 				////////////////mover automaticamente motor phi
@@ -104,7 +101,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 				s_out_theta_pos=2'b00;
 				s_out_theta_neg=2'b00;
 					
-				if(phi_actual>=(phi_manual+error)||phi_actual<=(phi_manual-error))begin 	
+				if(phi_actual>=(phi_manual+error) || phi_actual<=(phi_manual-error))begin 	
 					if(phi_actual>phi_manual) begin
 						if((phi_actual-phi_manual)<=giro) begin
 							s_out_phi_pos=2'b01;	// movimiento horario horizontal
@@ -123,7 +120,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 						end
 					end
 				end else begin 
-					shift_motor=2'b01;
+					shift_motor=2'b10;
 					//NO mover motor phi
 					s_out_phi_pos=2'b00;
 					s_out_phi_neg=2'b00;
@@ -137,7 +134,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 				s_out_phi_pos=2'b00;
 				s_out_phi_neg=2'b00;
 				
-				if(theta_actual>=(theta_manual+error)||theta_actual<=(theta_manual-error))begin 
+				if(theta_actual>=(theta_manual+error) || theta_actual<=(theta_manual-error))begin 
 					if(theta_actual>theta_manual) begin
 						s_out_theta_pos=2'b01; // movimiento horario vertical
 						s_out_theta_neg=2'b00; 
@@ -146,7 +143,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 						s_out_theta_neg=2'b01; // movimiento antihorario vertical
 					end	
 				end else begin 
-					shift_motor=2'b01;
+					shift_motor=2'b00;
 					//NO mover motor theta
 					s_out_theta_pos=2'b00;
 					s_out_theta_neg=2'b00;
