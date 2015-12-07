@@ -43,7 +43,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 		end else begin
 			
 	
-		if(sma!)begin
+		if(!sma)begin
 		//----------------------//MODO AUTOMATICO//----------------------//	
 			if(shift_motor==2'b00)begin
 			
