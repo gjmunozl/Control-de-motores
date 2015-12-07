@@ -11,7 +11,7 @@ module peripheral_control_movimiento(clk , rst , d_in , cs , addr , rd , wr, d_o
 
 
 //------------------------------------ regs and wires-------------------------------
-reg [1:0] sma;
+reg sma;
 reg [15:0] RV1;
 reg [15:0] RV2;
 reg [15:0] RH1;
@@ -21,8 +21,8 @@ reg [15:0] theta_a;
 reg [15:0] phi_m;
 reg [15:0] phi_a;
 wire[1:0] s_out_theta_p;
-wire[1:0] s_out_phi_p;
 wire[1:0] s_out_theta_n;
+wire[1:0] s_out_phi_p;
 wire[1:0] s_out_phi_n;
 
 reg [5:0] s;
@@ -44,10 +44,9 @@ case (addr)
 8'h0E:begin s = (cs && wr) ? 6'b001000 : 6'b000000 ;end //phi_m
 8'h10:begin s = (cs && wr) ? 6'b001001 : 6'b000000 ;end //phi_a
 
-
 8'h12:begin s = (cs && rd) ? 6'b001010 : 6'b000000 ;end //s_out_theta_p
-8'h16:begin s = (cs && rd) ? 6'b001011 : 6'b000000 ;end //s_out_theta_n
-8'h14:begin s = (cs && rd) ? 6'b001100 : 6'b000000 ;end //s_out_phi_p
+8'h14:begin s = (cs && rd) ? 6'b001011 : 6'b000000 ;end //s_out_theta_n
+8'h16:begin s = (cs && rd) ? 6'b001100 : 6'b000000 ;end //s_out_phi_p
 8'h18:begin s = (cs && rd) ? 6'b001101 : 6'b000000 ;end //s_out_phi_n
 default:begin s = 6'b000000 ; end
 endcase
