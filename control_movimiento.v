@@ -10,7 +10,7 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 	///////////////////entradas de posición manual
 	input [15:0]theta_manual;
 	input [15:0]theta_actual;
-	input[1:0]sma; //////////interruptor modo manual/automatico
+	input sma; //////////interruptor modo manual/automatico
 	input rst;
 	///////////////////entradas de posición actual	
 	input [15:0]phi_actual;
@@ -24,7 +24,6 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 
 	//inicialización 
 	reg[1:0] shift_motor=2'b00;
-	reg[1:0] shift_R=2'b00;
 	reg [15:0] error=3'b101;//5
 	reg [15:0] giro=8'b10110100;//180;
 	
@@ -40,11 +39,11 @@ module control_movimiento (rst,sma,clk, R_vertical_1 , R_vertical_2 , R_horizont
 	shift_R=2'b00;
 	error=3'b101;//5
 	giro=8'b10110100;//180;
-	//rsma=2'b00;
+
 		end else begin
 			
 	
-		if(sma!=2'b01)begin
+		if(sma!)begin
 		//----------------------//MODO AUTOMATICO//----------------------//	
 			if(shift_motor==2'b00)begin
 			
